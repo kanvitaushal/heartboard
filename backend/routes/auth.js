@@ -1,15 +1,9 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { setUsers } = require('../middleware/auth');
+const User = require('../models/User'); // <-- Use your MongoDB User model
 
 const router = express.Router();
-
-// In-memory user storage for demo
-const users = [];
-
-// Share users array with middleware
-setUsers(users);
 
 // Generate JWT Token
 const generateToken = (id) => {
@@ -36,7 +30,7 @@ router.post('/register', async (req, res) => {
     }
 
     // Check if user already exists
-    const userExists = users.find(user => user.email === email);
+    const userExists = await User.findOne({ email });
     if (userExists) {
       console.log('User already exists:', email);
       return res.status(400).json({
@@ -50,8 +44,7 @@ router.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Create user
-    const user = {
-      id: Date.now().toString(),
+    const user = await User.create({
       name,
       email,
       password: hashedPassword,
@@ -61,23 +54,22 @@ router.post('/register', async (req, res) => {
       isVerified: true,
       preferences: {},
       createdAt: new Date()
-    };
+    });
 
-    users.push(user);
     console.log('User registered:', user);
 
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
       data: {
-        _id: user.id,
+        _id: user._id,
         name: user.name,
         email: user.email,
         avatar: user.avatar,
         role: user.role,
         isVerified: user.isVerified
       },
-      token: generateToken(user.id)
+      token: generateToken(user._id)
     });
   } catch (error) {
     console.error('Registration error:', error);
@@ -93,6 +85,7 @@ router.post('/register', async (req, res) => {
 // @access  Public
 router.post('/login', async (req, res) => {
   try {
+    console.log('Login request body:', req.body);
     const { email, password } = req.body;
 
     // Validate required fields
@@ -104,7 +97,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Check if user exists
-    const user = users.find(user => user.email === email);
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({
         error: 'Invalid credentials',
@@ -125,7 +118,7 @@ router.post('/login', async (req, res) => {
       success: true,
       message: 'Login successful',
       data: {
-        _id: user.id,
+        _id: user._id,
         name: user.name,
         email: user.email,
         avatar: user.avatar,
@@ -133,7 +126,7 @@ router.post('/login', async (req, res) => {
         isVerified: user.isVerified,
         preferences: user.preferences
       },
-      token: generateToken(user.id)
+      token: generateToken(user._id)
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -150,7 +143,7 @@ router.post('/login', async (req, res) => {
 router.get('/me', async (req, res) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
-    
+
     if (!token) {
       return res.status(401).json({
         error: 'No token provided',
@@ -159,7 +152,7 @@ router.get('/me', async (req, res) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'demo-secret');
-    const user = users.find(user => user.id === decoded.id);
+    const user = await User.findById(decoded.id);
 
     if (!user) {
       return res.status(404).json({
@@ -171,7 +164,7 @@ router.get('/me', async (req, res) => {
     res.json({
       success: true,
       data: {
-        _id: user.id,
+        _id: user._id,
         name: user.name,
         email: user.email,
         avatar: user.avatar,
@@ -197,7 +190,7 @@ router.put('/profile', async (req, res) => {
   try {
     const { name, email, phone, preferences } = req.body;
     const token = req.headers.authorization?.split(' ')[1];
-    
+
     if (!token) {
       return res.status(401).json({
         error: 'No token provided',
@@ -206,28 +199,27 @@ router.put('/profile', async (req, res) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'demo-secret');
-    const userIndex = users.findIndex(user => user.id === decoded.id);
+    const user = await User.findById(decoded.id);
 
-    if (userIndex === -1) {
+    if (!user) {
       return res.status(404).json({
         error: 'User not found',
         message: 'User not found'
       });
     }
 
-    const user = users[userIndex];
     user.name = name || user.name;
     user.email = email || user.email;
     user.phone = phone || user.phone;
     user.preferences = { ...user.preferences, ...preferences };
 
-    users[userIndex] = user;
+    await user.save();
 
     res.json({
       success: true,
       message: 'Profile updated successfully',
       data: {
-        _id: user.id,
+        _id: user._id,
         name: user.name,
         email: user.email,
         avatar: user.avatar,
@@ -252,7 +244,7 @@ router.put('/password', async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
     const token = req.headers.authorization?.split(' ')[1];
-    
+
     if (!token) {
       return res.status(401).json({
         error: 'No token provided',
@@ -261,16 +253,14 @@ router.put('/password', async (req, res) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'demo-secret');
-    const userIndex = users.findIndex(user => user.id === decoded.id);
+    const user = await User.findById(decoded.id);
 
-    if (userIndex === -1) {
+    if (!user) {
       return res.status(404).json({
         error: 'User not found',
         message: 'User not found'
       });
     }
-
-    const user = users[userIndex];
 
     // Check current password
     const isMatch = await bcrypt.compare(currentPassword, user.password);
@@ -283,10 +273,9 @@ router.put('/password', async (req, res) => {
 
     // Hash new password
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    user.password = await bcrypt.hash(newPassword, salt);
 
-    user.password = hashedPassword;
-    users[userIndex] = user;
+    await user.save();
 
     res.json({
       success: true,
@@ -308,7 +297,7 @@ router.post('/forgot-password', async (req, res) => {
   try {
     const { email } = req.body;
 
-    const user = users.find(user => user.email === email);
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({
         error: 'User not found',
@@ -335,8 +324,6 @@ router.post('/forgot-password', async (req, res) => {
 // @access  Public
 router.post('/reset-password', async (req, res) => {
   try {
-    const { token, newPassword } = req.body;
-
     // In a real app, you would verify the reset token here
     res.json({
       success: true,
@@ -351,4 +338,4 @@ router.post('/reset-password', async (req, res) => {
   }
 });
 
-module.exports = router; 
+module.exports = router;
