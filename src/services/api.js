@@ -68,5 +68,5 @@ export const giftsAPI = {
 
 // Health check
 export const healthCheck = () => api.get('/health');
-image.png
+
 export default api; 
