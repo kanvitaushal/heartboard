@@ -30,6 +30,8 @@ app.use(cors({
   credentials: true
 }));
 
+app.options('*', cors());
+
 // Serve static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
