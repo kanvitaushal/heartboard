@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://your-backend-url.onrender.com/api/';
+const API_BASE_URL = 'https://heartboard-backend.onrender.com/api/';
 
 // Create axios instance
 const api = axios.create({
@@ -68,5 +68,5 @@ export const giftsAPI = {
 
 // Health check
 export const healthCheck = () => api.get('/health');
-
+image.png
 export default api; 
