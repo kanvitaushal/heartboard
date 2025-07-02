@@ -12,27 +12,10 @@ const app = express();
 // Middleware
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-const allowedOrigins = [
-  'https://heartboard.vercel.app',
-  'https://heartboard-kwyu8b1f8-kanvitaushauls-projects.vercel.app',
-];
-
 app.use(cors({
-  origin: function(origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      return callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  origin: process.env.FRONTEND_URL || 'http://localhost:5174',
+  credentials: true
 }));
-
-// Handle preflight requests for all routes
-app.options('*', cors());
 
 // Serve static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
