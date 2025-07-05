@@ -344,7 +344,7 @@ router.post('/reset-password', async (req, res) => {
 router.post('/logout', (req, res) => {
   // If you use JWT, logout is handled on the client by deleting the token.
   // This endpoint just exists to prevent a 404.
-  res.json({ success: true, message: 'Logged out' });
+  res.json({ success: true, message: 'Logged out (dummy endpoint)' });
 });
 
 module.exports = router;
