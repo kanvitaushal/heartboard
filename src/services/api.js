@@ -1,7 +1,5 @@
 import axios from 'axios';
-
-// Force redeploy to update API URL
-const API_BASE_URL = 'https://heartboard-backend.onrender.com/api/';
+import { API_BASE_URL } from '../config.js';
 
 // Create axios instance
 const api = axios.create({
@@ -32,6 +30,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      // Redirect to login page for consistency
       window.location.href = '/login';
     }
     return Promise.reject(error);

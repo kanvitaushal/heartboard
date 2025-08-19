@@ -1,13 +1,29 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Mail, Lock, User, Phone, Eye, EyeOff, Heart } from 'lucide-react'
-import { authAPI } from '../services/api'
+import { authAPI, healthCheck } from '../services/api'
 import toast from 'react-hot-toast'
 
 const Auth = ({ onAuthSuccess }) => {
   const [isLogin, setIsLogin] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [serverStatus, setServerStatus] = useState('checking')
+
+  // Check server health on component mount
+  useEffect(() => {
+    const checkServerHealth = async () => {
+      try {
+        await healthCheck()
+        setServerStatus('connected')
+      } catch (error) {
+        console.error('Server health check failed:', error)
+        setServerStatus('disconnected')
+      }
+    }
+    
+    checkServerHealth()
+  }, [])
 
   const [formData, setFormData] = useState({
     name: '',
@@ -56,7 +72,16 @@ const Auth = ({ onAuthSuccess }) => {
       }
     } catch (error) {
       console.error('Auth error:', error)
-      const message = error.response?.data?.message || 'Authentication failed'
+      let message = 'Authentication failed'
+      
+      if (error.response?.data?.message) {
+        message = error.response.data.message
+      } else if (error.code === 'NETWORK_ERROR') {
+        message = 'Network error - please check your connection'
+      } else if (error.response?.status === 0) {
+        message = 'Cannot connect to server - please try again later'
+      }
+      
       toast.error(message)
     } finally {
       setLoading(false)
@@ -209,6 +234,20 @@ const Auth = ({ onAuthSuccess }) => {
             <div className="flex-1 border-t border-gray-300"></div>
             <span className="px-4 times-roman text-sm text-gray-500">or</span>
             <div className="flex-1 border-t border-gray-300"></div>
+          </div>
+
+          {/* Server Status */}
+          <div className="mt-4 text-center">
+            <div className="flex items-center justify-center space-x-2">
+              <div className={`w-2 h-2 rounded-full ${
+                serverStatus === 'connected' ? 'bg-green-500' : 
+                serverStatus === 'disconnected' ? 'bg-red-500' : 'bg-yellow-500'
+              }`}></div>
+              <span className="text-xs text-gray-500">
+                {serverStatus === 'connected' ? 'Server Connected' : 
+                 serverStatus === 'disconnected' ? 'Server Disconnected' : 'Checking Server...'}
+              </span>
+            </div>
           </div>
 
           {/* Demo Login */}

@@ -15,16 +15,40 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 const allowedOrigins = [
   'https://heartboard.vercel.app',
   'https://heartboard-kwyu8b1f8-kanvitaushauls-projects.vercel.app',
+  'https://heartboard-git-main-kanvitaushauls-projects.vercel.app',
+  'https://heartboard-*.vercel.app',
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:5174',
 ];
 
 app.use(cors({
   origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
+    
+    // Allow all localhost origins for development
+    if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+      return callback(null, true);
+    }
+    
+    // Allow Vercel preview deployments
+    if (origin.includes('vercel.app')) {
+      return callback(null, true);
+    }
+    
+    // Check specific allowed origins
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
-    } else {
+    }
+    
+    // For production, be more strict
+    if (process.env.NODE_ENV === 'production') {
       return callback(new Error('Not allowed by CORS'));
     }
+    
+    // For development, allow all origins
+    return callback(null, true);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],

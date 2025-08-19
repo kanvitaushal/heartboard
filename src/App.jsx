@@ -49,7 +49,13 @@ function App() {
   }
 
   if (!isAuthenticated) {
-    return <Auth onAuthSuccess={handleAuthSuccess} />
+    return (
+      <Routes>
+        <Route path="/" element={<Auth onAuthSuccess={handleAuthSuccess} />} />
+        <Route path="/login" element={<Auth onAuthSuccess={handleAuthSuccess} />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    )
   }
 
   return (
@@ -73,6 +79,8 @@ function App() {
           <Route path="/letters" element={<Letters />} />
           <Route path="/design" element={<Design />} />
           <Route path="/countdowns" element={<Countdowns />} />
+          <Route path="/login" element={<Navigate to="/home" replace />} />
+          <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
       </motion.div>
     </div>

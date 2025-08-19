@@ -45,7 +45,8 @@ const Dashboard = ({ sidebarCollapsed, setSidebarCollapsed }) => {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
     toast.success('Logged out successfully! 👋')
-    window.location.reload()
+    // Route to login explicitly to avoid 404s on static hosting
+    window.location.href = '/login'
   }
 
   const settingsItems = [
