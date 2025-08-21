@@ -58,9 +58,7 @@ function App() {
   if (!isAuthenticated) {
     return (
       <Routes>
-        <Route path="/" element={<Auth onAuthSuccess={handleAuthSuccess} />} />
-        <Route path="/login" element={<Auth onAuthSuccess={handleAuthSuccess} />} />
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Auth onAuthSuccess={handleAuthSuccess} />} />
       </Routes>
     )
   }
