@@ -1,15 +1,5 @@
 {
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
-  ],
-  "routes": [
-    { "src": "/login", "dest": "/index.html" },
-    { "src": "/home", "dest": "/index.html" },
-    { "src": "/profiles", "dest": "/index.html" },
-    { "src": "/memory-vault", "dest": "/index.html" },
-    { "src": "/todo", "dest": "/index.html" },
-    { "src": "/letters", "dest": "/index.html" },
-    { "src": "/design", "dest": "/index.html" },
-    { "src": "/countdowns", "dest": "/index.html" }
   ]
 } 

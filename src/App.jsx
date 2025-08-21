@@ -42,6 +42,8 @@ function App() {
     localStorage.removeItem('user')
     setUser(null)
     setIsAuthenticated(false)
+    // Force a clean state reset
+    window.location.href = '/'
   }
 
   if (loading) {
@@ -58,6 +60,8 @@ function App() {
   if (!isAuthenticated) {
     return (
       <Routes>
+        <Route path="/" element={<Auth onAuthSuccess={handleAuthSuccess} />} />
+        <Route path="/login" element={<Auth onAuthSuccess={handleAuthSuccess} />} />
         <Route path="*" element={<Auth onAuthSuccess={handleAuthSuccess} />} />
       </Routes>
     )
