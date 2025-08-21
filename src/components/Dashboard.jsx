@@ -22,7 +22,7 @@ import {
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
-const Dashboard = ({ sidebarCollapsed, setSidebarCollapsed }) => {
+const Dashboard = ({ sidebarCollapsed, setSidebarCollapsed, onLogout }) => {
   const location = useLocation()
   const [showSettings, setShowSettings] = useState(false)
   const [showAbout, setShowAbout] = useState(false)
@@ -42,11 +42,8 @@ const Dashboard = ({ sidebarCollapsed, setSidebarCollapsed }) => {
   ]
 
   const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
     toast.success('Logged out successfully! 👋')
-    // Route to login explicitly to avoid 404s on static hosting
-    window.location.href = '/login'
+    onLogout()
   }
 
   const settingsItems = [

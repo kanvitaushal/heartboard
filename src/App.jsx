@@ -37,6 +37,13 @@ function App() {
     setIsAuthenticated(true)
   }
 
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    setUser(null)
+    setIsAuthenticated(false)
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-red-50 via-pink-50 to-red-100 flex items-center justify-center">
@@ -63,6 +70,7 @@ function App() {
       <Dashboard 
         sidebarCollapsed={sidebarCollapsed}
         setSidebarCollapsed={setSidebarCollapsed}
+        onLogout={handleLogout}
       />
       <motion.div 
         className="flex-1 flex flex-col overflow-hidden"
