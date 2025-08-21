@@ -30,8 +30,8 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      // Redirect to login page for consistency
-      window.location.href = '/login';
+      // Force page reload to reset authentication state
+      window.location.reload();
     }
     return Promise.reject(error);
   }
