@@ -72,6 +72,7 @@ app.use('/api/todos', require('./routes/todos'));
 app.use('/api/designs', require('./routes/designs'));
 app.use('/api/countdowns', require('./routes/countdowns'));
 app.use('/api/users', require('./routes/users'));
+app.use('/api/analytics', require('./routes/analytics'));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

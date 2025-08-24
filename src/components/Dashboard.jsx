@@ -18,7 +18,8 @@ import {
   Info,
   FileText,
   Github,
-  Mail as MailIcon
+  Mail as MailIcon,
+  BarChart3
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -50,6 +51,7 @@ const Dashboard = ({ sidebarCollapsed, setSidebarCollapsed, onLogout }) => {
     { icon: Info, label: 'About', action: () => setShowAbout(true) },
     { icon: FileText, label: 'Privacy Policy', action: () => setShowPrivacy(true) },
     { icon: MailIcon, label: 'Contact Support', action: () => window.open('mailto:kanvitaushal@gmail.com', '_blank') },
+    { icon: BarChart3, label: 'Analytics', action: () => window.open('/analytics', '_blank') },
     { icon: Github, label: 'GitHub', action: () => window.open('https://github.com', '_blank') }
   ]
 

@@ -10,8 +10,10 @@ import TodoList from './components/TodoList'
 import Letters from './components/Letters'
 import Design from './components/Design'
 import Countdowns from './components/Countdowns'
+import AnalyticsDashboard from './components/AnalyticsDashboard'
 import './App.css'
 import { healthCheck } from './services/api'
+import { trackLogout } from './services/analytics'
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -44,7 +46,12 @@ function App() {
     setIsAuthenticated(true)
   }
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    // Track logout before clearing data
+    if (user) {
+      await trackLogout(user)
+    }
+    
     localStorage.removeItem('token')
     localStorage.removeItem('user')
     setUser(null)
@@ -96,6 +103,7 @@ function App() {
           <Route path="/letters" element={<Letters />} />
           <Route path="/design" element={<Design />} />
           <Route path="/countdowns" element={<Countdowns />} />
+          <Route path="/analytics" element={<AnalyticsDashboard />} />
           <Route path="/login" element={<Navigate to="/home" replace />} />
           <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>

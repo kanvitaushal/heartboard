@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Mail, Lock, User, Phone, Eye, EyeOff, Heart } from 'lucide-react'
 import { authAPI, healthCheck } from '../services/api'
+import { trackLogin, trackRegister } from '../services/analytics'
 import toast from 'react-hot-toast'
 
 const Auth = ({ onAuthSuccess }) => {
@@ -66,6 +67,13 @@ const Auth = ({ onAuthSuccess }) => {
         // Save token and user data
         localStorage.setItem('token', response.data.token)
         localStorage.setItem('user', JSON.stringify(response.data.data))
+        
+        // Track analytics
+        if (isLogin) {
+          await trackLogin(response.data.data, false)
+        } else {
+          await trackRegister(response.data.data)
+        }
         
         toast.success(isLogin ? 'Welcome back! ❤️' : 'Account created successfully! 🎉')
         onAuthSuccess(response.data.data)
@@ -253,7 +261,7 @@ const Auth = ({ onAuthSuccess }) => {
           {/* Demo Login */}
           <div className="mt-6">
             <button
-              onClick={() => {
+              onClick={async () => {
                 // Demo login for testing
                 const demoUser = {
                   _id: 'demo123',
@@ -266,6 +274,10 @@ const Auth = ({ onAuthSuccess }) => {
                 }
                 localStorage.setItem('token', 'demo-token')
                 localStorage.setItem('user', JSON.stringify(demoUser))
+                
+                // Track demo login
+                await trackLogin(demoUser, true)
+                
                 toast.success('Demo mode activated! 🎉')
                 // Call the success handler to update authentication state
                 onAuthSuccess(demoUser)
