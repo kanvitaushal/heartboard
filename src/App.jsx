@@ -25,8 +25,15 @@ function App() {
     const savedUser = localStorage.getItem('user')
     
     if (token && savedUser) {
-      setUser(JSON.parse(savedUser))
-      setIsAuthenticated(true)
+      try {
+        const userData = JSON.parse(savedUser)
+        setUser(userData)
+        setIsAuthenticated(true)
+      } catch (error) {
+        console.error('Error parsing user data:', error)
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+      }
     }
     
     setLoading(false)
@@ -42,8 +49,8 @@ function App() {
     localStorage.removeItem('user')
     setUser(null)
     setIsAuthenticated(false)
-    // Force a clean state reset
-    window.location.href = '/'
+    // Use window.location.reload() instead of href to avoid routing issues
+    window.location.reload()
   }
 
   if (loading) {

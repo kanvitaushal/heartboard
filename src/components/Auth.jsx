@@ -267,6 +267,7 @@ const Auth = ({ onAuthSuccess }) => {
                 localStorage.setItem('token', 'demo-token')
                 localStorage.setItem('user', JSON.stringify(demoUser))
                 toast.success('Demo mode activated! 🎉')
+                // Call the success handler to update authentication state
                 onAuthSuccess(demoUser)
               }}
               className="w-full bg-gray-600 text-white py-3 rounded-lg font-medium hover:bg-gray-700 transition-colors"
