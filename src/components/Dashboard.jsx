@@ -142,6 +142,11 @@ const Dashboard = ({ sidebarCollapsed, setSidebarCollapsed, onLogout }) => {
             >
               <p className="times-roman text-white font-medium truncate">
                 {user.name || 'Demo User'}
+                {user.role === 'admin' && (
+                  <span className="ml-2 px-2 py-1 bg-red-600 text-white text-xs rounded-full">
+                    Admin
+                  </span>
+                )}
               </p>
               <p className="times-roman text-xs text-red-200 truncate">
                 {user.email || 'demo@heartboard.com'}

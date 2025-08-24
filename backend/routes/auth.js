@@ -43,6 +43,10 @@ router.post('/register', async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Determine role based on email
+    const adminEmail = process.env.ADMIN_EMAIL || 'heartboardgiftgiving@gmail.com'; // Admin email gets admin role
+    const userRole = email.toLowerCase() === adminEmail.toLowerCase() ? 'admin' : 'user';
+
     // Create user
     const user = await User.create({
       name,
@@ -50,7 +54,7 @@ router.post('/register', async (req, res) => {
       password: hashedPassword,
       phone: phone || '',
       avatar: '',
-      role: 'user',
+      role: userRole,
       isVerified: true,
       preferences: {},
       createdAt: new Date()

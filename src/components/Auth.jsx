@@ -258,35 +258,37 @@ const Auth = ({ onAuthSuccess }) => {
             </div>
           </div>
 
-          {/* Demo Login */}
-          <div className="mt-6">
-            <button
-              onClick={async () => {
-                // Demo login for testing
-                const demoUser = {
-                  _id: 'demo123',
-                  name: 'Demo User',
-                  email: 'demo@heartboard.com',
-                  avatar: { url: 'https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg' },
-                  role: 'user',
-                  isVerified: true,
-                  preferences: { theme: 'dark-red', notifications: { email: true, push: true } }
-                }
-                localStorage.setItem('token', 'demo-token')
-                localStorage.setItem('user', JSON.stringify(demoUser))
-                
-                // Track demo login
-                await trackLogin(demoUser, true)
-                
-                toast.success('Demo mode activated! 🎉')
-                // Call the success handler to update authentication state
-                onAuthSuccess(demoUser)
-              }}
-              className="w-full bg-gray-600 text-white py-3 rounded-lg font-medium hover:bg-gray-700 transition-colors"
-            >
-              Try Demo Mode
-            </button>
-          </div>
+                     {/* Demo Login */}
+           <div className="mt-6">
+             <button
+               onClick={async () => {
+                 // Demo login for testing
+                 const demoUser = {
+                   _id: 'demo123',
+                   name: 'Demo User',
+                   email: 'demo@heartboard.com',
+                   avatar: { url: 'https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg' },
+                   role: 'user',
+                   isVerified: true,
+                   preferences: { theme: 'dark-red', notifications: { email: true, push: true } }
+                 }
+                 localStorage.setItem('token', 'demo-token')
+                 localStorage.setItem('user', JSON.stringify(demoUser))
+                 
+                 // Track demo login
+                 await trackLogin(demoUser, true)
+                 
+                 toast.success('Demo mode activated! 🎉')
+                 // Call the success handler to update authentication state
+                 onAuthSuccess(demoUser)
+               }}
+               className="w-full bg-gray-600 text-white py-3 rounded-lg font-medium hover:bg-gray-700 transition-colors mb-2"
+             >
+               Try Demo Mode
+             </button>
+             
+             
+           </div>
         </motion.div>
       </div>
     </div>
