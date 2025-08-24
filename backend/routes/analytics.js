@@ -147,10 +147,10 @@ router.get('/dashboard', protect, authorize('admin'), async (req, res) => {
   }
 });
 
-// @desc    Get basic public stats (no auth required)
+// @desc    Get basic stats (admin only)
 // @route   GET /api/analytics/stats
-// @access  Public
-router.get('/stats', async (req, res) => {
+// @access  Private (Admin only)
+router.get('/stats', protect, authorize('admin'), async (req, res) => {
   try {
     // Get total logins (last 30 days)
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
@@ -180,7 +180,7 @@ router.get('/stats', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Public stats error:', error);
+    console.error('Stats error:', error);
     res.status(500).json({
       error: 'Failed to get stats',
       message: error.message
