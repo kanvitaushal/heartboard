@@ -39,8 +39,8 @@ router.post('/track', async (req, res) => {
 
 // @desc    Get analytics dashboard data
 // @route   GET /api/analytics/dashboard
-// @access  Private (Admin only)
-router.get('/dashboard', protect, authorize('admin'), async (req, res) => {
+// @access  Public
+router.get('/dashboard', async (req, res) => {
   try {
     const { period = '30d' } = req.query;
     
@@ -147,10 +147,10 @@ router.get('/dashboard', protect, authorize('admin'), async (req, res) => {
   }
 });
 
-// @desc    Get basic stats (admin only)
+// @desc    Get basic stats (public)
 // @route   GET /api/analytics/stats
-// @access  Private (Admin only)
-router.get('/stats', protect, authorize('admin'), async (req, res) => {
+// @access  Public
+router.get('/stats', async (req, res) => {
   try {
     // Get total logins (last 30 days)
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);

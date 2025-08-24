@@ -14,14 +14,10 @@ const AnalyticsDashboard = () => {
       setLoading(true)
       const response = await analyticsAPI.getStats()
       setStats(response.data.data)
-    } catch (error) {
-      console.error('Failed to fetch stats:', error)
-      if (error.response?.status === 401 || error.response?.status === 403) {
-        toast.error('Access denied. Admin privileges required.')
-      } else {
-        toast.error('Failed to load analytics data')
-      }
-    } finally {
+            } catch (error) {
+          console.error('Failed to fetch stats:', error)
+          toast.error('Failed to load analytics data')
+        } finally {
       setLoading(false)
     }
   }
